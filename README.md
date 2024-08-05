@@ -23,20 +23,23 @@ The required packages are located in ```requirements```.
     pip install -r requirement.txt
 
 ## Dataset
-Class는 총 6개(AUR, BPH, Normal, OAB, Stricture, Underactive bladder)로 3가지(Danger, Warning, Normal)로 사용자에게 분류하는 것이 목표입니다. 
+- Class는 총 6개(AUR, BPH, Normal, OAB, Stricture, Underactive bladder)로 3가지(Danger, Warning, Normal)로 분류하여 사용자에게 피드백 주는 것이 목표입니다. 
 
-AUR은 급성 요폐, BPH는 양성 전립선 비대증, OAB는 과민성 방광, Stricture는 요도 협착증, Underactive bladder(UB)는 저활동성 방광입니다.
+- AUR은 급성 요폐, BPH는 양성 전립선 비대증, OAB는 과민성 방광, Stricture는 요도 협착증, Underactive bladder(UB)는 저활동성 방광입니다.
 
-분류 기준은 배뇨량이 100이하이고, 잔뇨량이 300이하인 경우 혹은 잔뇨량이 400 이하인 경우 AUR로 Danger에 속합니다.
+- 분류 기준은 배뇨량이 100이하이고, 잔뇨량이 300이하인 경우 혹은 잔뇨량이 400 이하인 경우 AUR로 Danger에 속합니다.
 
-Stricture는 최고 요속 5이하일 경우, BPH는 최고 요속 10 이하일 경우 Danger에 속합니다.
+- Stricture는 최고 요속 5이하일 경우, BPH는 최고 요속 10 이하일 경우 Danger에 속합니다.
 
-UB는 delta Q 값이 6.5 이하일 때 Danger에 속합니다. (delta Q는 최고 요속에서 평균 요속을 뺀 값 입니다.)
+- BPH와 UB는 는 delta Q 값이 6.5 이하인 경우와 PVR-R이 40%이상인 경우 Danger에 속합니다. (delta Q는 최고 요속에서 평균 요속을 뺀 값 입니다.)
 
-Danger가 아닌 질환은 Warning에 속합니다. 
+    - (요속그래프만 볼 경우, BPH와 UB는 전문가의 경우도 구분할 수 없습니다.)
+
+- Danger가 아닌 질환은 Warning에 속합니다. 
 
 
 ## Training
+- For training, reference ```train.ipynb```.
 
 ## Inference
 
