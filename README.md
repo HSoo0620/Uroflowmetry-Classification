@@ -25,7 +25,7 @@ The required packages are located in ```requirements```.
     pip install -r requirement.txt
 
 ## Dataset
-<img src = "https://github.com/user-attachments/assets/de138961-f5ad-41a7-9220-8e47636e3b6a" width="100%" height="100%">
+<img src = "https://github.com/user-attachments/assets/c2c210ff-3d4c-40e4-8b6f-078446646cd6" width="100%" height="100%">
 
 - Class는 총 6개(AUR, BPH, Normal, OAB, Stricture, Underactive bladder)로 3가지(Danger, Warning, Normal)로 분류하여 사용자에게 피드백 주는 것이 목표입니다. 
 
