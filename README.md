@@ -45,6 +45,9 @@ The required packages are located in ```requirements```.
 ## Training
 - For training, reference ```train.ipynb```.
 
+## Testing
+- For Testing, reference ```test.ipynb```.
+
 ## Inference
 
 ## TODO
