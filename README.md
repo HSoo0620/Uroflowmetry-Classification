@@ -1,4 +1,4 @@
-# HnN-Registration
+# Uroflowmetry-Classification
 
 Implement of "Uroflowmetry Classification"
 
@@ -46,7 +46,7 @@ The required packages are located in ```requirements```.
 - For training, reference ```train.ipynb```.
 
 ## Testing
-- For Testing, reference ```test.ipynb```.
+- For testing, reference ```test.ipynb```.
 
 ## Inference
 
