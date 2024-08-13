@@ -11,6 +11,8 @@ import torch.nn.functional as F
 import numpy as np
 import torchvision.transforms as transforms
 
+Margin = 10
+
 def str2bool(v):
     if isinstance(v, bool):
         return v
@@ -25,6 +27,55 @@ def resizing_and_binary_img(origin_img):
     resize_img_invert = cv2.bitwise_not(resize_img)
     ret, binary_img = cv2.threshold(resize_img_invert, 50, 255, cv2.THRESH_BINARY)
     return binary_img
+
+def canny(img, min, max):
+    canny_img = cv2.Canny(img, min, max)
+    return canny_img
+
+def sobel(img):
+    dx = cv2.Sobel(img, cv2.CV_32F, 1, 0) 
+    dy = cv2.Sobel(img, cv2.CV_32F, 0, 1)
+    mag = cv2.magnitude(dx, dy)
+    mag = np.clip(mag, 0, 255).astype(np.uint8) 
+
+    dst = np.zeros(img.shape[:2], np.uint8) 
+    dst[mag > 120] = 255 
+    return dst
+
+def find_min_max(cnt):
+    
+    x_min, x_max, y_min, y_max = np.ndarray.min(cnt[...,0]), np.ndarray.max(cnt[...,0]), np.ndarray.min(cnt[...,1]), np.ndarray.max(cnt[...,1])
+            
+    return x_min, x_max, y_min, y_max
+    
+def get_contours(img):
+    contours, _= cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    all_contour = img.copy()
+    
+    cnt = sorted(contours, key=cv2.contourArea, reverse=True)[0]
+    
+    one_contour = cv2.drawContours(img.copy(), cnt, -1, (0, 255, 0), 2)
+    
+    for certain_contour in contours:
+        
+        rect = cv2.minAreaRect(certain_contour)
+        box = cv2.boxPoints(rect)
+        box = np.intp(box)
+        
+        all_contour = cv2.drawContours(all_contour, [box], -1, (0, 255, 0), 2)
+        
+    return all_contour, one_contour, cnt
+
+def crop_img_opencv(origin_img):
+    img = origin_img.copy()
+    canny_img = canny(img, 70, 150)
+    all_contour, one_contour, contours = get_contours(canny_img.copy())
+    x_min, x_max, y_min, y_max= find_min_max(contours)
+
+    crop_img = origin_img[y_min-Margin:y_max+Margin,x_min-Margin:x_max+Margin]
+
+    return crop_img
 
 class ImageTransform() :
     def __init__(self) :
@@ -164,10 +215,13 @@ def run_classification(df, args):
                 img = Image.open(img_path).convert('RGB')
                 origin_img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 # 2. Yolov5를 통한 RoI Crop
-                crop_result = RoI_detection_model(img, size=roi_imgsz, augment=False)
-                box = crop_result.pred[0][0][:4].tolist()
-                x1, y1, x2, y2 = map(int, box)
-                crop_img = origin_img[y1:y2, x1:x2]
+                if args.roi_crop_using_yolo :
+                    crop_result = RoI_detection_model(img, size=roi_imgsz, augment=False)
+                    box = crop_result.pred[0][0][:4].tolist()
+                    x1, y1, x2, y2 = map(int, box)
+                    crop_img = origin_img[y1:y2, x1:x2]
+                else : 
+                    crop_img = crop_img_opencv(origin_img)
                 # 3. 추가 전처리
                 preprocessed_img = resizing_and_binary_img(crop_img)
                 preprocessed_img = transform(preprocessed_img, phase='val').unsqueeze(0).to(device)
@@ -194,6 +248,8 @@ if __name__ == "__main__":
                         help='detection model pre train directory')
     parser.add_argument('--classification_model_pt', type=str, default='./experiment/pre_crop_204/',
                         help='classification model pre train directory')
+    parser.add_argument('--roi_crop_using_yolo', type=str2bool, default='True',
+                        help='choose crop methods True: yolov5 False: opencv')
     
     args = parser.parse_args()
     main(args)
