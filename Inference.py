@@ -176,7 +176,7 @@ def post_processing(pred_class, df):
         if (df['Maximum_flow'] <= 5):
             result = 'red'
         else :
-            return 'yellow'
+            result = 'yellow'
         
     elif pred_class == 'UB':
         if (Delta_Q <= 6.5) or (PVR_R >= 0.4) :
