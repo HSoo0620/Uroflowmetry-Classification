@@ -39,7 +39,26 @@ The required packages are located in ```requirements```.
 
     - (BPH와 UB의 요속그래프는 매우 유사하기 때문에 Classification이 어렵습니다. 따라서, 후처리로 Danger와 Warning을 결정합니다.)
 
-- Danger가 아닌 질환은 Warning에 속합니다. 
+- Danger가 아닌 질환은 Warning에 속합니다.
+  
+## Inference
+```python
+python Inference.py --data_csv test.csv \
+```
+최종 추론에 사용되는 Pre-Processing 기준은 다음과 같습니다. 
+- Voided volume <= 100 and 잔뇨 >= 300
+- 잔뇨 >= 400
+- Voiding efficiency < 50%
+이와 같은 경우 모델 추론 결과와 상관없이 위험 환자 입니다.
+
+최종 추론에 사용되는 Post-Processing 기준은 다음과 같습니다. 
+- Delta Q와 PVR-R을 이용하여 각 환자에 따라 위험과 경고로 분류합니다.
+    - Delta Q는 최고요속 - 평균요속
+    - PVR-R은 잔뇨 / (잔뇨+배뇨량)
+- BPH : 최고요속 10 이하 | Detla Q 6.5 이하 | PVR-R 40% 이상 => 위험
+- OAB : 모든 경우 => 경고
+- Stricture : 최고요속 5이하 => 위험 
+- UB : Detla Q 6.5 이하 | PVR-R 40% 이상 => 위험 
 
 
 ## Training
@@ -48,8 +67,6 @@ The required packages are located in ```requirements```.
 ## Testing
 - For testing, reference ```test.ipynb```.
 
-## Inference
-
 ## TODO
-- [ ] main inference code
+- [x] main inference code
 - [x] Explanation dataset and Categorization
