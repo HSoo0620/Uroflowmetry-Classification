@@ -3,7 +3,7 @@
 Implement of "Uroflowmetry Classification"
 
 ## Overall Process
-<img src = "https://github.com/user-attachments/assets/0afcb88d-2538-415a-ac28-2c63b132dca3" width="100%" height="100%">
+<img src = "https://github.com/user-attachments/assets/0adedc9d-3374-4b4f-900c-403d404ea77a" width="100%" height="100%">
 
 ## Pre-processing
 Preprocessing first performs Canny edge detection, then finds the largest contour to crop the RoI.
@@ -60,12 +60,15 @@ python Inference.py --data_csv test.csv \
 - Stricture : 최고요속 5이하 => 위험 
 - UB : Detla Q 6.5 이하 | PVR-R 40% 이상 => 위험 
 
-
 ## Training
 - For training, reference ```train.ipynb```.
 
 ## Testing
 - For testing, reference ```test.ipynb```.
+
+## Result
+- reference ```/confusion_matrix.ipynb```.
+<img src = "https://github.com/user-attachments/assets/a9cde425-7dd3-452f-9d92-410e842bcb61" width="50%" height="50%">
 
 ## TODO
 - [x] main inference code
