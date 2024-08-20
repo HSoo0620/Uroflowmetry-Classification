@@ -186,13 +186,15 @@ def post_processing(pred_class, df):
     
     return result
 
+import csv
+
 def run_classification(df, args):
-    with torch.no_grad() : 
+    with torch.no_grad():
         device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
         # preprocessing setting
         yolov5_weights = args.detection_model_pt
         RoI_detection_model = torch.hub.load('ultralytics/yolov5', 'custom', path=yolov5_weights).to(device)
-        roi_imgsz=(640, 640)
+        roi_imgsz = (640, 640)
         
         # classification setting
         pt_dir = args.classification_model_pt
@@ -203,24 +205,27 @@ def run_classification(df, args):
         uroflow_model.eval()
         transform = ImageTransform()
         
+        results = []  # 결과를 저장할 리스트
+        
         for idx, row in df.iterrows():
             # 1. 고위험 분류
             pre_filter_result = pre_filter_danger(row)
-            if pre_filter_result == 'red' :
+            if pre_filter_result == 'red':
                 pred_color = pre_filter_result
-                print(idx, ' pred result: ', pred_color, ' GT: ',row['Category'])
-            else :
+                print(idx, ' pred result: ', pred_color, ' GT: ', row['Category'])
+                results.append(['pre_filtered', pred_color, row['분류'], row['Category']])  # 결과 저장
+            else:
                 # (이미지 로드)
                 img_path = row['image_path']
                 img = Image.open(img_path).convert('RGB')
                 origin_img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
                 # 2. Yolov5를 통한 RoI Crop
-                if args.roi_crop_using_yolo :
+                if args.roi_crop_using_yolo:
                     crop_result = RoI_detection_model(img, size=roi_imgsz, augment=False)
                     box = crop_result.pred[0][0][:4].tolist()
                     x1, y1, x2, y2 = map(int, box)
                     crop_img = origin_img[y1:y2, x1:x2]
-                else : 
+                else:
                     crop_img = crop_img_opencv(origin_img)
                 # 3. 추가 전처리
                 preprocessed_img = resizing_and_binary_img(crop_img)
@@ -231,7 +236,14 @@ def run_classification(df, args):
                 pred_class = assign_class(output)
                 # 5. post processing
                 pred_color = post_processing(pred_class, row)
-                print(idx, ' pred result:', pred_class, pred_color, ' GT: ',row['분류'], row['Category'])
+                # print(idx, ' pred result:', pred_class, pred_color, ' GT: ', row['분류'], row['Category'])
+                results.append([pred_class, pred_color, row['분류'], row['Category']])  # 결과 저장
+        
+        # 결과를 CSV 파일로 저장
+        with open('classification_results.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Predicted Class', 'Predicted Color', 'Original Class', 'Original Category'])  # 헤더 작성
+            writer.writerows(results)  # 결과 작성
 
         return pred_color
 
@@ -242,7 +254,7 @@ def main(args):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--Data_csv', type=str, default='test_data.csv',
+    parser.add_argument('--Data_csv', type=str, default='final_data_v4.csv',
                         help='csv directory')
     parser.add_argument('--detection_model_pt', type=str, default='./best.pt',
                         help='detection model pre train directory')
