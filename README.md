@@ -3,7 +3,7 @@
 Implement of "Uroflowmetry Classification"
 
 ## Overall Process
-<img src = "https://github.com/user-attachments/assets/0adedc9d-3374-4b4f-900c-403d404ea77a" width="100%" height="100%">
+<img src = "https://github.com/user-attachments/assets/bc5127b8-abe2-494d-ad62-1ed56758171c" width="100%" height="100%">
 
 ## Pre-processing
 Preprocessing first performs Canny edge detection, then finds the largest contour to crop the RoI.
@@ -27,7 +27,7 @@ The required packages are located in ```requirements```.
 ## Dataset
 <img src = "https://github.com/user-attachments/assets/c2c210ff-3d4c-40e4-8b6f-078446646cd6" width="100%" height="100%">
 
-- Class는 총 6개(AUR, BPH, Normal, OAB, Stricture, Underactive bladder)로 3가지(Danger, Warning, Normal)로 분류하여 사용자에게 피드백 주는 것이 목표입니다. 
+- Class는 총 6개(AUR, BPH, Normal, OAB, Stricture, Underactive bladder)로 위험, 경고, 정상 여부를 사용자에게 피드백 주는 것이 목표입니다. 
 
 - AUR은 급성 요폐, BPH는 양성 전립선 비대증, OAB는 과민성 방광, Stricture는 요도 협착증, Underactive bladder(UB)는 저활동성 방광입니다.
 
